@@ -8,9 +8,11 @@ app.use(express.bodyParser());
 
 http.createServer(app).listen(80);
 
-callback = function(response){
+var options = {
+    host : "https://agent.electricimp.com",
+    path : "/5lnzpVhsLEK_?status=" + stat
+};
 
-}
 app.get("/", function(req, res){
     res.send("");
 });
@@ -21,7 +23,10 @@ app.post("/", function(req, res){
     json = JSON.parse(json);
     stat = json.stat;
     
-    res.send(stat);
+    stat = stat == "open" ? 1 : 0;
+
+    http.request("http://agent.electricimp.com/5lnzpVhsLEK_?status=" + stat, function(){}).end();
+    res.send("Ok");
 });
 
 app.get("/poll", function(req, res){
