@@ -1,6 +1,18 @@
 package com.hackmit.smartwindow.ui;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 
 import com.example.smartwindow.R;
 
@@ -18,7 +30,9 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 public class MainActivity extends FragmentActivity implements
@@ -111,9 +125,9 @@ public class MainActivity extends FragmentActivity implements
 			// getItem is called to instantiate the fragment for the given page.
 			// Return a DummySectionFragment (defined as a static inner class
 			// below) with the page number as its lone argument.
-			Fragment fragment = new DummySectionFragment();
+			Fragment fragment = new OpenCloseFragment();
 			Bundle args = new Bundle();
-			args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, position + 1);
+			args.putInt(OpenCloseFragment.ARG_SECTION_NUMBER, position + 1);
 			fragment.setArguments(args);
 			return fragment;
 		}
@@ -143,26 +157,60 @@ public class MainActivity extends FragmentActivity implements
 	 * A dummy fragment representing a section of the app, but that simply
 	 * displays dummy text.
 	 */
-	public static class DummySectionFragment extends Fragment {
+	public static class OpenCloseFragment extends Fragment implements View.OnClickListener{
 		/**
 		 * The fragment argument representing the section number for this
 		 * fragment.
 		 */
-		public static final String ARG_SECTION_NUMBER = "section_number";
+		public static final String OPEN = "Open Window";
+		public static final String CLOSE = "Close Window";
+		public static final String ARG_SECTION_NUMBER = "arg_section_number";
 
-		public DummySectionFragment() {
+		public OpenCloseFragment() {
+			
+			
 		}
 
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_main_dummy,
+			View rootView = inflater.inflate(R.layout.fragment_openclose,
 					container, false);
-			TextView dummyTextView = (TextView) rootView
-					.findViewById(R.id.section_label);
-			dummyTextView.setText(Integer.toString(getArguments().getInt(
-					ARG_SECTION_NUMBER)));
+			Button openCloseButton = (Button) rootView.findViewById(R.id.openclose_button);
+			openCloseButton.setOnClickListener(this);
+
+				
 			return rootView;
+		}
+
+		@Override
+		public void onClick(View button) {
+			HttpClient client = new DefaultHttpClient();
+			HttpPost post = new HttpPost("http://162.243.27.156");
+			try {
+		        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+		        if(((Button) button).getText().equals(OPEN)){
+		        	 nameValuePairs.add(new BasicNameValuePair("json", "{\"stat\" : \"open\"}"));
+					((Button) button).setText(CLOSE);
+				} else {
+					 nameValuePairs.add(new BasicNameValuePair("json", "{\"stat\" : \"close\"}"));
+					((Button) button).setText(OPEN);
+				}
+		       
+		        post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+
+		        // Execute HTTP Post Request
+		        HttpResponse response = client.execute(post);
+		        System.out.println("=======RESPONSE: " + response + " =========");
+		        
+		    } catch (ClientProtocolException e) {
+		        System.out.println("CLIENT PROTOCOL EXCEPTION: " + e);
+		    } catch (IOException e) {
+		        System.out.println("IO EXCEPTION: " + e);
+		    }
+			
+			//Switch text
+			
 		}
 	}
 

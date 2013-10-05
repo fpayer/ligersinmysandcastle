@@ -3,6 +3,7 @@
 	<name>SmartWindow</name>
 	<comment></comment>
 	<projects>
+		<project>library_holoeverywhere</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
