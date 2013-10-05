@@ -18,6 +18,7 @@ import com.example.smartwindow.R;
 
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -114,10 +115,15 @@ public class MainActivity extends FragmentActivity implements
 	 * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
 	 * one of the sections/tabs/pages.
 	 */
-	public class SectionsPagerAdapter extends FragmentPagerAdapter {
+	public class SectionsPagerAdapter extends FragmentPagerAdapter implements RequestExecuter {
 
 		public SectionsPagerAdapter(FragmentManager fm) {
 			super(fm);
+		}
+		
+		@Override
+		public void executeRequest(String openOrClose) {
+			new HttpRequestTask().execute(openOrClose);	
 		}
 
 		@Override
@@ -126,6 +132,7 @@ public class MainActivity extends FragmentActivity implements
 			// Return a DummySectionFragment (defined as a static inner class
 			// below) with the page number as its lone argument.
 			Fragment fragment = new OpenCloseFragment();
+			((OpenCloseFragment) fragment).setRequestExecuter(this);
 			Bundle args = new Bundle();
 			args.putInt(OpenCloseFragment.ARG_SECTION_NUMBER, position + 1);
 			fragment.setArguments(args);
@@ -165,10 +172,14 @@ public class MainActivity extends FragmentActivity implements
 		public static final String OPEN = "Open Window";
 		public static final String CLOSE = "Close Window";
 		public static final String ARG_SECTION_NUMBER = "arg_section_number";
+		public static RequestExecuter executer;
 
 		public OpenCloseFragment() {
 			
-			
+		}
+		
+		public void setRequestExecuter(RequestExecuter executer){
+			this.executer = executer;
 		}
 
 		@Override
@@ -185,17 +196,31 @@ public class MainActivity extends FragmentActivity implements
 
 		@Override
 		public void onClick(View button) {
+			String openOrClose = "close";
+			if(((Button) button).getText().equals(OPEN)){
+				openOrClose = "open";
+				((Button) button).setText(CLOSE);
+			} else {
+				((Button) button).setText(OPEN);
+			}
+			
+			executer.executeRequest(openOrClose);
+		}
+	}
+	
+	public class HttpRequestTask extends AsyncTask<String, Long, Integer>{
+
+		@Override
+		protected Integer doInBackground(String... openOrClose) {
 			HttpClient client = new DefaultHttpClient();
 			HttpPost post = new HttpPost("http://162.243.27.156");
 			try {
 		        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-		        if(((Button) button).getText().equals(OPEN)){
+		        if(openOrClose[0].equals("open")){
 		        	 nameValuePairs.add(new BasicNameValuePair("json", "{\"stat\" : \"open\"}"));
-					((Button) button).setText(CLOSE);
-				} else {
-					 nameValuePairs.add(new BasicNameValuePair("json", "{\"stat\" : \"close\"}"));
-					((Button) button).setText(OPEN);
-				}
+		        } else {
+		        	 nameValuePairs.add(new BasicNameValuePair("json", "{\"stat\" : \"close\"}"));
+		        }
 		       
 		        post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
@@ -208,10 +233,15 @@ public class MainActivity extends FragmentActivity implements
 		    } catch (IOException e) {
 		        System.out.println("IO EXCEPTION: " + e);
 		    }
-			
-			//Switch text
-			
+			return Integer.valueOf(0);
 		}
-	}
+		
+		 protected void onProgressUpdate(Integer... progress) {
+	         
+	     }
 
+	     protected void onPostExecute(Long result) {
+	     }
+		
+	}
 }
