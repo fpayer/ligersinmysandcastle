@@ -93,6 +93,35 @@ app.get("/poll", function(req, res){
     res.send(stat);
 });
 
+app.get("/text", function(req, res){
+    var json = req.body
+    console.log(json)
+    json = JSON.parse(json)
+    var message = ""
+
+   if(json.indexOf('open') != -1) {
+        stat = 1
+        message = "Your window has been opened successfully."
+    } else if(json.indexOf('clos') != -1) {
+        stat = 0
+        message = "Your window has been closed successfully."
+    }
+
+    if (twilio.validateExpressRequest(req, '693c15492ceda8baa4171a658a00ab4a')) {
+        var twiml = new twilio.TwimlResponse();
+        twiml.message(message)
+
+        res.type('text/xml');
+        res.send(twiml.toString());
+    }
+    else {
+        res.send("Can't touch this!");
+    }
+
+    http.request("http://agent.electricimp.com/5lnzpVhsLEK_?status=" + stat, function(){}).end();
+    res.send("Ok");
+});
+
 setTimeout(function() {
     http.request("http://api.wunderground.com/api/28bef9a745907290/conditions/hourly/q/" + zip + ".json", callback).end();
 }, 1000);
