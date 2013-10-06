@@ -63,14 +63,14 @@ public class ThermostatMain extends Activity implements SeekBar.OnSeekBarChangeL
     }
 
     @Override
-    public void onStartTrackingTouch(SeekBar arg0) {
+    public void onStartTrackingTouch(SeekBar bar) {
         // TODO Auto-generated method stub
         
     }
 
     @Override
-    public void onStopTrackingTouch(SeekBar arg0) {
-        // TODO Auto-generated method stub
+    public void onStopTrackingTouch(SeekBar bar) {
+       new HttpRequestTask().execute(Integer.toString(bar.getProgress() + 43));
         
     }
     
@@ -143,6 +143,38 @@ public class ThermostatMain extends Activity implements SeekBar.OnSeekBarChangeL
  
 		return sb.toString();
  
+	}
+    
+    public class HttpRequestTask extends AsyncTask<String, Long, Integer>{
+
+		@Override
+		protected Integer doInBackground(String... temp) {
+			HttpClient client = new DefaultHttpClient();
+			HttpPost post = new HttpPost("http://162.243.27.156/setDesiredTemp");
+			try {
+		        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
+	        	 nameValuePairs.add(new BasicNameValuePair("json", "{\"val\" : \""+ temp[0] + "\"}"));
+
+		        post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+
+		        // Execute HTTP Post Request
+		        client.execute(post);
+		        
+		    } catch (ClientProtocolException e) {
+		        System.out.println("CLIENT PROTOCOL EXCEPTION: " + e);
+		    } catch (IOException e) {
+		        System.out.println("IO EXCEPTION: " + e);
+		    }
+			return Integer.valueOf(0);
+		}
+		
+		 protected void onProgressUpdate(Integer... progress) {
+	         
+	     }
+
+	     protected void onPostExecute(Long result) {
+	     }
+		
 	}
 
 }
