@@ -57,7 +57,7 @@ public class ThermostatMain extends Activity implements SeekBar.OnSeekBarChangeL
 	
 	@Override
     public void onProgressChanged(SeekBar bar, int progress, boolean user) {
-        progress += 43;
+        progress += 38;
         desiredTemp.setText(progress + " °F");
         System.out.println("progress");
     }
@@ -70,7 +70,7 @@ public class ThermostatMain extends Activity implements SeekBar.OnSeekBarChangeL
 
     @Override
     public void onStopTrackingTouch(SeekBar bar) {
-       new HttpRequestTask().execute(Integer.toString(bar.getProgress() + 43));
+       new HttpRequestTask().execute(Integer.toString(bar.getProgress() + 38));
         
     }
     
@@ -82,7 +82,7 @@ public class ThermostatMain extends Activity implements SeekBar.OnSeekBarChangeL
         	startCheckingTemperature();
             
         	updateResultsInUi();
-            mHandler.postDelayed(mUpdateResults, 1000);
+            mHandler.postDelayed(mUpdateResults, 500);
         }
     };
     
