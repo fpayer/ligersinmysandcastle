@@ -1,11 +1,15 @@
 var http = require("http");
 var express = require("express");
-var app = express();
+var twilio = require("twilio");
+var fs = require("fs");
+var path = require("path");
+
 var zip = "02139";
 var desiredTemp = 68;
 var insideTemp = 66;
 var stat = "close";
 
+var app = express();
 app.use(express.bodyParser());
 
 http.createServer(app).listen(80);
@@ -93,33 +97,73 @@ app.get("/poll", function(req, res){
     res.send(stat);
 });
 
-app.get("/text", function(req, res){
-    var json = req.body
-    console.log(json)
-    json = JSON.parse(json)
-    var message = ""
+app.post("/text", function(req, res){
+    var json = req.body.Body;
+    console.log(json);
+    var message = "";
 
-   if(json.indexOf('open') != -1) {
+   if(json.toLowerCase().indexOf('open') != -1) {
         stat = 1
         message = "Your window has been opened successfully."
-    } else if(json.indexOf('clos') != -1) {
+    } else if(json.toLowerCase().indexOf('clos') != -1) {
         stat = 0
         message = "Your window has been closed successfully."
     }
 
-    if (twilio.validateExpressRequest(req, '693c15492ceda8baa4171a658a00ab4a')) {
-        var twiml = new twilio.TwimlResponse();
-        twiml.message(message)
+    var twiml = new twilio.TwimlResponse();
+    twiml.message(message)
 
-        res.type('text/xml');
-        res.send(twiml.toString());
-    }
-    else {
-        res.send("Can't touch this!");
-    }
+    res.type('text/xml');
+    res.send(twiml.toString());
 
     http.request("http://agent.electricimp.com/5lnzpVhsLEK_?status=" + stat, function(){}).end();
     res.send("Ok");
+});
+
+app.get("/admin*", function(req, res){
+    console.log(req.url);
+    var base = "./admin/";
+    var branch = "";
+    var contentType = "text/html";
+    if(req.url == "/admin" || req.url == "/admin/")
+        branch = "admin.html";
+    else
+        branch = req.url.substring(7);
+
+    var extname = path.extname(branch);
+    switch(extname) {
+        case '.js' : 
+            contentType = "text/javascript";
+            break;
+        case ".css" :
+            contentType = "text/css";
+            break;
+        case ".jpg" : 
+            contentType = "image/jpeg";
+            break;
+        case ".png" :
+            contentType = "image/png";
+            break;
+    }
+
+    var filePath = base+branch;
+    if (path.exists(filePath, function(exists) {
+        if (exists) {
+            fs.readFile(filePath, function(error, content) {
+                if (error) {
+                    res.writeHead(500);
+                    res.end();
+                } else {
+                    res.writeHead(200, { 'Content-Type': contentType});
+                    res.end(content, 'utf-8');
+                }
+            });
+        }
+        else {
+            res.writeHead(500);
+            res.end();
+        }
+    }));
 });
 
 setTimeout(function() {
