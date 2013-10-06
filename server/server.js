@@ -81,10 +81,11 @@ app.post("/", function(req, res){
     console.log(req.body);
     json = JSON.parse(json);
     stat = json.stat;
-    
-    stat = stat == "open" ? 1 : 0;
 
-    http.request("http://agent.electricimp.com/5lnzpVhsLEK_?status=" + stat, function(){}).end();
+    var flag = stat == "open" ? 1 : 0;
+
+    http.request("http://agent.electricimp.com/5lnzpVhsLEK_?status=" + flag
+, function(){}).end();
     res.send("Ok");
 });
 
