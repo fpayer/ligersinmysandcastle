@@ -166,6 +166,33 @@ app.get("/admin*", function(req, res){
     }));
 });
 
+app.get("/getInsideTemp", function(req, res){
+    res.writeHead(200);
+    res.write(insideTemp+"");
+    res.end();
+});
+
+app.post("/setInsideTemp", function(req, res){
+    var json = req.body;
+
+    insideTemp = json.val;
+    res.send("Ok");
+});
+
+app.get("/getDesiredTemp", function(req, res){
+    res.writeHead(200);
+    res.write(desiredTemp+"");
+    res.end();
+});
+
+app.post("/setDesiredTemp", function(req, res){
+    var json = req.body.json;
+    json = JSON.parse(json);
+
+    desiredTemp = json.val;
+    res.send("Ok");
+});
+
 setTimeout(function() {
     http.request("http://api.wunderground.com/api/28bef9a745907290/conditions/hourly/q/" + zip + ".json", callback).end();
 }, 1000);
