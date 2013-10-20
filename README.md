@@ -16,4 +16,4 @@ Smart Window makes intelligent decisions about whether or not you should have yo
 
 Additionally, it contains an Android application that allows you to open and close your window manually at any time. For those without smart phones or mobile data, there is also a Twilio interface that allows you to open and close your window via SMS messages. 
 
-The Smart Window system consists of an Android application, a NodeJS server, an Ardunio with servos connected to the window, and an Electric Imp chip to facilitate communication between the server and Arduino over WiFi. 
+The Smart Window system consists of an Android application, a NodeJS server, an Ardunio to drive circuits containing a thermistor to determine ambient temperature and servos to open and close the window, and an Electric Imp chip to facilitate communication between the server and Arduino over WiFi. 
