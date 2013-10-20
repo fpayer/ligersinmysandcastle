@@ -7,7 +7,7 @@ HackMIT 2013 Project
 - Twilio API Award
 
 Team 
-- Alex Choi (UIUC '16) |  https://github.com/asd2734
+- Jae Choi (UIUC '16) |  https://github.com/asd2734
 - Frank Cangialosi (UMD '16) | https://github.com/sbfcangialosi
 - Franz Payer (UMD '17) | https://github.com/fpayer
 - Kevin Griffiths (UMD '15)
