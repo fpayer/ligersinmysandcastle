@@ -6,6 +6,8 @@ HackMIT 2013 Project
 - Weather Underground API Award
 - Twilio API Award
 
+http://challengepost.com/software/smart-window
+
 Team 
 - Jae Choi (UIUC '16) |  https://github.com/asd2734
 - Frank Cangialosi (UMD '16) | https://github.com/sbfcangialosi
